@@ -54,9 +54,11 @@ int main(int argc, char *argv[])
     Sheet sheet=Sheet(10,size,mass,lx,ly,B);
     std::vector<Disk> &disk_vec = sheet.get_vector();
 
-    //bond init
     std::vector<Bond> bond_vec;
 
+    for(int i=0;i<(int)disk_vec.size()-1;i++){
+        bond_vec.emplace_back(disk_vec.at(i),disk_vec.at(i+1));
+    }
 
     //record initial state
 
@@ -84,7 +86,7 @@ int main(int argc, char *argv[])
             dsk.reset_force();
             
             //set gravity force
-            //dsk.add_gravity_force(gravity);
+            dsk.add_gravity_force(gravity);
         }
 
         //compute ddi
@@ -95,6 +97,11 @@ int main(int argc, char *argv[])
                     //dsk.add_ddi_force(n,dsk,other_disk);
                 }
             }
+        }
+
+        //compute bond
+        for(Bond& bdn : bond_vec){
+            bdn.computeBond();
         }
         
         //update velocity and position

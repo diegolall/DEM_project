@@ -18,9 +18,16 @@ private:
     Eigen::Vector3d t;
     Eigen::Vector3d rij;
 
+    //constant
+    double kn;//spring constant
+    double kt;
 
+    double m_un;
+    double m_ut;
 
 public:
     Bond(Disk&,Disk&);
     ~Bond();
+    void computeBond();
+    void update_bond();
 };
