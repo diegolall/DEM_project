@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
 
     for(int i=0;i<(int)disk_vec.size()-1;i++){
         bond_vec.emplace_back(disk_vec.at(i),disk_vec.at(i+1));
+        //std::cout << "\t"<<&disk_vec.at(i)<<std::endl;
     }
 
     //record initial state

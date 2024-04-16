@@ -5,9 +5,11 @@
 #include "Bond.h"
 #include "Disk.h"
 #include "cmath"
+#include "iostream"
 
 Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
     disk_1=&i_d_1;
+    //std::cout<< &i_d_1 << std::endl;
     disk_2=&i_d_2;
     m_theta_1=(disk_1->theta());
     m_theta_2=(disk_2->theta());
