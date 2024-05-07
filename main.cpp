@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     //sheet init
     double size =0.1;
     double mass = 0.01;
-    Sheet sheet=Sheet(4,size,mass,lx,ly,B);
+    Sheet sheet=Sheet(2,size,mass,lx,ly,B);
     std::vector<Disk> &disk_vec = sheet.get_vector();
 
     std::vector<Bond> bond_vec;

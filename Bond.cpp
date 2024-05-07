@@ -25,8 +25,8 @@ Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
     m_un=0.;
     m_ut=0.;
 
-    kn=100.;
-    kt=100.;
+    kn=1000.;
+    kt=1000.;
     ktheta=1.;
     dtheta=0.;
     m_M=Eigen::Vector3d::Zero();
@@ -39,11 +39,14 @@ Bond::~Bond(){
 void Bond::computeBond() {
     update_bond();
     m_un=rij.dot(n);
-    m_ut=(rij.dot(t));
+    m_ut=rij.dot(t);
     m_M=Eigen::Vector3d(0.,0.,-dtheta*ktheta);
     Fn=-kn*m_un*n;
     Ft=kt*m_ut*t;
-    Eigen::Vector3d Force=Fn + Ft;
+    if(disk_2->v().dot(t)-disk_1->v().dot(t)>0){
+        Ft=-Ft;
+    }
+    Eigen::Vector3d Force= Fn + Ft;
     disk_2->add_force(Force);
     disk_2->add_momentum(Force.cross(cp_2));
     disk_2->add_momentum(m_M);
