@@ -1,4 +1,5 @@
-
+OUTPUT_DIR := output
+OBJECTS := $(OUTPUT_DIR)/*.txt
 
 dem: main.o Plan.o Disk.o Cell.o Functions.o Sheet.o Bond.o
 	g++ -std=c++11 -W -Wall -O3 main.o Plan.o Disk.o Cell.o Functions.o Sheet.o Bond.o -o dem
@@ -25,4 +26,4 @@ Bond.o: Bond.cpp Bond.h Disk.h
 	g++ -std=c++11 -W -Wall -O3 -c Bond.cpp
 
 clean:
-	rm *.o dem
+	rm *.o && rm -rf $(OBJECTS)

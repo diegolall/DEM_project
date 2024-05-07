@@ -4,7 +4,7 @@
 
 #include "Bond.h"
 #include "Disk.h"
-#include "cmath"
+#include "math.h"
 #include "iostream"
 
 Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
@@ -18,13 +18,18 @@ Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
     cp_2=disk_2->r()+Eigen::Vector3d(-disk_2->radius()*std::cos(m_theta_2),-disk_2->radius()*std::sin(m_theta_2),0);
 
     rij=cp_2-cp_1;
-    n=disk_2->r()-disk_2->r();
+    n=disk_2->r()-disk_1->r();
     n.normalize();
     t=n.cross(Eigen::Vector3d(0.,0.,1));
     t.normalize();
+    m_un=0.;
+    m_ut=0.;
 
-    kn=10000.;
-    kt=100000.;
+    kn=100.;
+    kt=100.;
+    ktheta=1.;
+    dtheta=0.;
+    m_M=Eigen::Vector3d::Zero();
 }
 
 Bond::~Bond(){
@@ -34,19 +39,37 @@ Bond::~Bond(){
 void Bond::computeBond() {
     update_bond();
     m_un=rij.dot(n);
-    m_ut=rij.dot(t);
-    disk_2->add_force(kn*m_un*n);
-    disk_2->add_force(kt*m_ut*t);
+    m_ut=(rij.dot(t));
+    m_M=Eigen::Vector3d(0.,0.,-dtheta*ktheta);
+    Fn=-kn*m_un*n;
+    Ft=kt*m_ut*t;
+    Eigen::Vector3d Force=Fn + Ft;
+    disk_2->add_force(Force);
+    disk_2->add_momentum(Force.cross(cp_2));
+    disk_2->add_momentum(m_M);
+
+    //first disk only momentum
+    /*
+    if(disk_1->index() == 0){
+        disk_1->add_momentum(m_M);
+    }
+    */
 }
 
 void Bond::update_bond() {
     m_theta_1=disk_1->theta();
     m_theta_2=disk_2->theta();
 
-    cp_1=disk_1->r()+Eigen::Vector3d(disk_1->radius()*std::cos(m_theta_1),disk_1->radius()*std::sin(m_theta_2),0);
-    cp_2=disk_2->r()+Eigen::Vector3d(-disk_2->radius()*std::cos(m_theta_2),-disk_2->radius()*std::sin(m_theta_2),0);
+    cp_1=disk_1->r()+ Eigen::Vector3d(disk_1->radius()*std::cos(m_theta_1),disk_1->radius()*std::sin(m_theta_2),0);
+    cp_2=disk_2->r()+ Eigen::Vector3d(-disk_2->radius()*std::cos(m_theta_2),-disk_2->radius()*std::sin(m_theta_2),0);
 
     rij=cp_2-cp_1;
-    n=disk_2->r()-disk_2->r();
-    t=n.cross(Eigen::Vector3d(0.,0.,1));
+    n=(disk_2->r()-disk_1->r()).normalized();
+    /*
+    double dot = rij.dot(n);
+    double det = rij.x()*n.y() - rij.y()*n.x();
+    dtheta=atan2(det,dot);
+     */
+    dtheta=m_theta_2-m_theta_1;
+    t=n.cross(Eigen::Vector3d(0.,0.,1.)).normalized();
 }

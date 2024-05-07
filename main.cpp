@@ -24,6 +24,9 @@ int main(int argc, char *argv[])
     std::srand((unsigned int)time(NULL));
 
     double dt = 0.000001;
+    double e = 0.9;
+    double mu = 0.6;
+    double kn = 10000.;
     
     //video
     int fps = 100;
@@ -51,16 +54,15 @@ int main(int argc, char *argv[])
     //sheet init
     double size =0.1;
     double mass = 0.01;
-    Sheet sheet=Sheet(10,size,mass,lx,ly,B);
+    Sheet sheet=Sheet(4,size,mass,lx,ly,B);
     std::vector<Disk> &disk_vec = sheet.get_vector();
 
     std::vector<Bond> bond_vec;
 
-    for(int i=0;i<(int)disk_vec.size()-1;i++){
+    for(int i=0;i<((int)disk_vec.size()-1);i++){
         bond_vec.emplace_back(disk_vec.at(i),disk_vec.at(i+1));
         //std::cout << "\t"<<&disk_vec.at(i)<<std::endl;
     }
-
     //record initial state
 
     for(Disk& dsk : disk_vec)
@@ -74,6 +76,7 @@ int main(int argc, char *argv[])
 
     //ETA variables
     int step_count=0;
+    double delta;
     
     for(double time = 0. ; time < totalTime ; time += dt)
     {
@@ -104,14 +107,28 @@ int main(int argc, char *argv[])
         for(Bond& bdn : bond_vec){
             bdn.computeBond();
         }
-        
+
+        //compute contact disk-disk
+        /*
+        for(Disk& dsk : disk_vec){
+            for(Disk& other_dsk:disk_vec){
+                if(dsk.index() !=other_dsk.index()){
+                    n = dsk.r()-other_dsk.r();
+                    delta = n.norm()-(dsk.radius()+other_dsk.radius());
+                    if(delta < 0.)
+                    {
+                        compute_contact(dsk,&other_dsk,delta,n,kn,e,mu);
+                    }
+
+                }
+            }
+        }
+         */
         //update velocity and position
         for(Disk& dsk : disk_vec)
         {
-            if(dsk.index()!=0) {
                 dsk.update_velocity(dt);
                 dsk.update_position(0.5 * dt);
-            }
         }
         
         //record

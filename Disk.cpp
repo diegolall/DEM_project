@@ -68,7 +68,9 @@ void Disk::add_ddi_force(Eigen::Vector3d n, Disk& i_disk,Disk& j_disk){
 
 void Disk::update_position(double dt)
 {
-    m_r += m_v*dt;
+    if(this->index()!=0) {
+        m_r += m_v * dt;
+    }
     m_theta += m_w.z()*dt;
 }
 
