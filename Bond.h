@@ -12,7 +12,8 @@ private:
     //contact point
     Eigen::Vector3d cp_1;
     Eigen::Vector3d cp_2;
-    Eigen::Vector3d lever;
+    Eigen::Vector3d l1;
+    Eigen::Vector3d l2;
 
     //contact basis
     Eigen::Vector3d n;
@@ -20,6 +21,9 @@ private:
     Eigen::Vector3d rij;
     Eigen::Vector3d Ft;
     Eigen::Vector3d Fn;
+    Eigen::Vector3d v_rel; //vitesse relative
+    Eigen::Vector3d frot_t;
+    Eigen::Vector3d frot_n;
     double dtheta;
 
     //constant

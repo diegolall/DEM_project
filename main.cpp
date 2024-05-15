@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
     std::srand((unsigned int)time(NULL));
 
     double dt = 0.000001;
-    double e = 0.9;
-    double mu = 0.6;
-    double kn = 10000.;
+    //double e = 0.9;
+    //double mu = 0.6;
+    //double kn = 10000.;
     
     //video
     int fps = 100;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     std::cout << "Current time: " << std::ctime(&currentTime_t) << std::endl;
 
 
-    double totalTime = 0.5;
+    double totalTime = 4.;
     double recTime;
     int total_step=(int)(totalTime/dt);
     printf("total step: %d\n",total_step);
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
     
     //sheet init
     double size =0.1;
-    double mass = 0.01;
-    Sheet sheet=Sheet(2,size,mass,lx,ly,B);
+    double mass = 0.1;
+    Sheet sheet=Sheet(40,size,mass,lx,ly,B);
     std::vector<Disk> &disk_vec = sheet.get_vector();
 
     std::vector<Bond> bond_vec;
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
     //ETA variables
     int step_count=0;
-    double delta;
+    //double delta;
     
     for(double time = 0. ; time < totalTime ; time += dt)
     {
@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
         }
 
         //compute ddi
+
         for(Disk& dsk: disk_vec){
             for(Disk& other_disk: disk_vec){
                 if(dsk.index() != other_disk.index()){
@@ -103,13 +104,14 @@ int main(int argc, char *argv[])
             }
         }
 
+
         //compute bond
         for(Bond& bdn : bond_vec){
             bdn.computeBond();
         }
 
         //compute contact disk-disk
-        /*
+    /*
         for(Disk& dsk : disk_vec){
             for(Disk& other_dsk:disk_vec){
                 if(dsk.index() !=other_dsk.index()){
@@ -123,12 +125,14 @@ int main(int argc, char *argv[])
                 }
             }
         }
-         */
+    */
         //update velocity and position
         for(Disk& dsk : disk_vec)
         {
+            if(dsk.index()!=0) {
                 dsk.update_velocity(dt);
                 dsk.update_position(0.5 * dt);
+            }
         }
         
         //record

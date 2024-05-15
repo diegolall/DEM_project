@@ -18,16 +18,16 @@ Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
     cp_2=disk_2->r()+Eigen::Vector3d(-disk_2->radius()*std::cos(m_theta_2),-disk_2->radius()*std::sin(m_theta_2),0);
 
     rij=cp_2-cp_1;
-    n=disk_2->r()-disk_1->r();
-    n.normalize();
-    t=n.cross(Eigen::Vector3d(0.,0.,1));
-    t.normalize();
+    n=(disk_2->r()-disk_1->r()).normalized();
+    t=(rij - (rij.dot(n))*n).normalized();
+
     m_un=0.;
     m_ut=0.;
+    v_rel=Eigen::Vector3d(0,0,0);
 
-    kn=1000.;
-    kt=1000.;
-    ktheta=1.;
+    kn=100.;
+    kt=100.;
+    ktheta=0.05;
     dtheta=0.;
     m_M=Eigen::Vector3d::Zero();
 }
@@ -42,14 +42,24 @@ void Bond::computeBond() {
     m_ut=rij.dot(t);
     m_M=Eigen::Vector3d(0.,0.,-dtheta*ktheta);
     Fn=-kn*m_un*n;
-    Ft=kt*m_ut*t;
-    if(disk_2->v().dot(t)-disk_1->v().dot(t)>0){
-        Ft=-Ft;
-    }
-    Eigen::Vector3d Force= Fn + Ft;
-    disk_2->add_force(Force);
-    disk_2->add_momentum(Force.cross(cp_2));
+    Ft=-kt*m_ut*t;
+
+    //frottement
+    frot_n =-5*v_rel.dot(n)*n;
+    frot_t =-5*v_rel.dot(t)*t;
+    disk_1->add_force(-frot_t-frot_n);
+    disk_2->add_force(frot_t+frot_n);
+    //forces
+    Eigen::Vector3d F= Fn + Ft;
+    disk_1->add_force(-F);
+    disk_2->add_force(F);
+
+    //moment de forces
+    disk_1->add_momentum(-F.cross(l1));//moments au point de contacte
+    disk_2->add_momentum(F.cross(l2));
+    disk_1->add_momentum(-m_M);
     disk_2->add_momentum(m_M);
+
 
     //first disk only momentum
     /*
@@ -63,8 +73,13 @@ void Bond::update_bond() {
     m_theta_1=disk_1->theta();
     m_theta_2=disk_2->theta();
 
-    cp_1=disk_1->r()+ Eigen::Vector3d(disk_1->radius()*std::cos(m_theta_1),disk_1->radius()*std::sin(m_theta_2),0);
-    cp_2=disk_2->r()+ Eigen::Vector3d(-disk_2->radius()*std::cos(m_theta_2),-disk_2->radius()*std::sin(m_theta_2),0);
+    l1=Eigen::Vector3d(disk_1->radius()*std::cos(m_theta_1),disk_1->radius()*std::sin(m_theta_2),0);
+    l2=Eigen::Vector3d(-disk_2->radius()*std::cos(m_theta_2),-disk_2->radius()*std::sin(m_theta_2),0);
+
+    cp_1=disk_1->r()+ l1;
+    cp_2=disk_2->r()+ l2;
+
+    v_rel=disk_2->v()-disk_1->v();
 
     rij=cp_2-cp_1;
     n=(disk_2->r()-disk_1->r()).normalized();
@@ -74,5 +89,5 @@ void Bond::update_bond() {
     dtheta=atan2(det,dot);
      */
     dtheta=m_theta_2-m_theta_1;
-    t=n.cross(Eigen::Vector3d(0.,0.,1.)).normalized();
+    t=(rij - (rij.dot(n))*n).normalized();
 }
