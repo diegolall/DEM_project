@@ -9,6 +9,13 @@ private:
     double m_theta_1;
     double m_theta_2;
 
+    //bond parameters
+    double E; //young modulus
+    double A; //cross-sectional area
+    double l_b;//bond lenght
+    double e;//Poisson ration
+    double G;
+
     //contact point
     Eigen::Vector3d cp_1;
     Eigen::Vector3d cp_2;
@@ -30,6 +37,7 @@ private:
     double kn;//spring constant
     double kt;
     double ktheta;
+    double nu;//frottement visceux
 
 
     double m_un;

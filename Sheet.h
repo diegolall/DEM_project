@@ -18,7 +18,7 @@ private:
 public:
     std::vector<Disk> m_particles;
     Sheet();
-    Sheet(int i_particles,double i_size,double i_mass,double lx,double ly,Eigen::Vector3d B);
+    Sheet(int i_particles,double i_size,double i_mass,Eigen::Vector3d B);
     ~Sheet();
 
     std::vector<Disk>& get_vector();

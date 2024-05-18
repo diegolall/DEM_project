@@ -41,10 +41,8 @@ int main(int argc, char *argv[])
     double recTime;
     int total_step=(int)(totalTime/dt);
     printf("total step: %d\n",total_step);
-    
-    //container
-    double lx = 0.1;
-    double ly = 0.1;
+
+
     //magnetic interaction
     double phi =(argc>1)?std::stod(argv[1]):0.;
     double phi_rad=phi*M_PI/180.;
@@ -52,9 +50,16 @@ int main(int argc, char *argv[])
     Eigen::Vector3d B=Eigen::Vector3d(B_norm*std::sin(phi_rad),B_norm*std::cos(phi_rad),0.);
     
     //sheet init
-    double size =0.1;
-    double mass = 0.1;
-    Sheet sheet=Sheet(40,size,mass,lx,ly,B);
+    double eta=0.75;
+
+    double longueur =0.02;//20mm
+    double largeur = 0.003;//3mm
+    double epaisseur= 0.00035;//350 micrometre
+    double mass = (longueur*largeur*epaisseur)*eta;
+
+
+
+    Sheet sheet=Sheet(10,longueur,mass,B);
     std::vector<Disk> &disk_vec = sheet.get_vector();
 
     std::vector<Bond> bond_vec;
@@ -110,22 +115,6 @@ int main(int argc, char *argv[])
             bdn.computeBond();
         }
 
-        //compute contact disk-disk
-    /*
-        for(Disk& dsk : disk_vec){
-            for(Disk& other_dsk:disk_vec){
-                if(dsk.index() !=other_dsk.index()){
-                    n = dsk.r()-other_dsk.r();
-                    delta = n.norm()-(dsk.radius()+other_dsk.radius());
-                    if(delta < 0.)
-                    {
-                        compute_contact(dsk,&other_dsk,delta,n,kn,e,mu);
-                    }
-
-                }
-            }
-        }
-    */
         //update velocity and position
         for(Disk& dsk : disk_vec)
         {
