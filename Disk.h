@@ -27,9 +27,12 @@ private:
     //magnetic interaction
     Eigen::Vector3d m_mu;
     double m_chi; //angle between mu and e_x
+
+    //material
+    double E;
         
 public:
-    Disk(int,double,double,double,double,double,double,Eigen::Vector3d);
+    Disk(int,double,double,double,double,double,double,Eigen::Vector3d,double);
     ~Disk();
     
     void update_velocity(double);
@@ -50,6 +53,8 @@ public:
     double radius();
     double mass();
     double theta();
+    double get_E();
+    double inertia();
     Eigen::Vector3d r();
     Eigen::Vector3d v();
     Eigen::Vector3d w();

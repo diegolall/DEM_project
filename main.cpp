@@ -23,11 +23,32 @@ int main(int argc, char *argv[])
 {
     std::srand((unsigned int)time(NULL));
 
-    double dt = 0.000001;
-    //double e = 0.9;
-    //double mu = 0.6;
-    //double kn = 10000.;
-    
+    //sheet init
+    double eta=1000.;
+
+    double E=0.3e6; //module de young
+    double diameter= 0.5;
+    int n_part=10;
+    double longueur =diameter*(double)n_part;
+    double largeur =diameter;
+    double mass = eta*longueur*largeur*diameter;
+    //double mass =0.001;
+    printf("mass = %lf and longueur = %lf\n", mass,longueur);
+
+    //magnetic interaction
+    double phi =(argc>1)?std::stod(argv[1]):0.;
+    double phi_rad=phi*M_PI/180.;
+    double B_norm=(argc>2)?std::stod(argv[2]):0.01; //in tesla (0.01 telsa= 100 gauss)
+    Eigen::Vector3d B=Eigen::Vector3d(B_norm*std::sin(phi_rad),B_norm*std::cos(phi_rad),0.);
+
+
+    Sheet sheet=Sheet(n_part,longueur,diameter,mass,B,E);
+    std::vector<Disk> &disk_vec = sheet.get_vector();
+
+    //double dt = 1.7417*longueur*std::sqrt(eta/E);
+    double dt = 0.8165*diameter*std::sqrt(eta/E)/100.;
+
+
     //video
     int fps = 100;
     double tStartCapture = 0.;
@@ -36,32 +57,12 @@ int main(int argc, char *argv[])
     std::time_t currentTime_t = std::chrono::system_clock::to_time_t(currentTime);
     std::cout << "Current time: " << std::ctime(&currentTime_t) << std::endl;
 
-
-    double totalTime = 4.;
+    double totalTime = 10.;
     double recTime;
     int total_step=(int)(totalTime/dt);
     printf("total step: %d\n",total_step);
 
-
-    //magnetic interaction
-    double phi =(argc>1)?std::stod(argv[1]):0.;
-    double phi_rad=phi*M_PI/180.;
-    double B_norm=(argc>2)?std::stod(argv[2]):0.01; //in tesla (0.01 telsa= 100 gauss)
-    Eigen::Vector3d B=Eigen::Vector3d(B_norm*std::sin(phi_rad),B_norm*std::cos(phi_rad),0.);
-    
-    //sheet init
-    double eta=0.75;
-
-    double longueur =0.02;//20mm
-    double largeur = 0.003;//3mm
-    double epaisseur= 0.00035;//350 micrometre
-    double mass = (longueur*largeur*epaisseur)*eta;
-
-
-
-    Sheet sheet=Sheet(10,longueur,mass,B);
-    std::vector<Disk> &disk_vec = sheet.get_vector();
-
+    //bond
     std::vector<Bond> bond_vec;
 
     for(int i=0;i<((int)disk_vec.size()-1);i++){
@@ -138,7 +139,7 @@ int main(int argc, char *argv[])
         }
         //printf("step %8d/%d\n", step_count, total_step);
         if(step_count%(total_step/10)==0) {
-            std::cout << "progressing : " << (double)step_count/total_step*100. <<"%" << std::endl;
+            std::cout << "progressing : " << (int)((double)step_count/total_step*100.) <<"%" << std::endl;
         }
         step_count++;
         //printf("step: %d\n",step_count);

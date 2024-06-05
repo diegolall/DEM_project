@@ -9,7 +9,7 @@ using namespace std;
 
 double const mu0=4.*M_PI*pow(10,-7);
 
-Disk::Disk(int i_index, double i_radius, double i_mass, double i_x, double i_y, double i_vx, double i_vy, Eigen::Vector3d B)
+Disk::Disk(int i_index, double i_radius, double i_mass, double i_x, double i_y, double i_vx, double i_vy, Eigen::Vector3d B,double i_E)
 {
     m_index = i_index;
     m_linkedDisk = nullptr;
@@ -17,6 +17,7 @@ Disk::Disk(int i_index, double i_radius, double i_mass, double i_x, double i_y, 
     m_radius = i_radius;
     m_mass = i_mass;
     m_inertia = 0.5*m_mass*m_radius*m_radius;
+    E=i_E;
     
     m_r = Eigen::Vector3d(i_x,i_y,0.);
     m_v = Eigen::Vector3d(i_vx,i_vy,0.);
@@ -133,6 +134,14 @@ double Disk::theta() {
     return m_theta;
 }
 
+double Disk::get_E(){
+    return E;
+}
+
+double Disk::inertia(){
+    return m_inertia;
+}
+
 Eigen::Vector3d Disk::r()
 {
     return m_r;
@@ -152,3 +161,4 @@ bool Disk::is_touching(double i_x,double i_y, double i_radius)
 {
     return (m_r - Eigen::Vector3d(i_x,i_y,0.)).norm() < (m_radius+i_radius);
 }
+

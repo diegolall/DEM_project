@@ -13,7 +13,6 @@
 Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
     //Bond variables
     disk_1=&i_d_1;
-    //std::cout<< &i_d_1 << std::endl;
     disk_2=&i_d_2;
     m_theta_1=(disk_1->theta());
     m_theta_2=(disk_2->theta());
@@ -29,8 +28,8 @@ Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
     m_ut=0.;
     v_rel=Eigen::Vector3d(0,0,0);
 
-    //Bond parameters
-    E=0.3e6;
+    //Bond parameter
+    E=disk_1->get_E();
     A=M_PI*(disk_1->radius()*disk_1->radius());
     l_b=2.*disk_1->radius();
     e=0.38;
@@ -38,10 +37,13 @@ Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
 
     kn=E*A/l_b;
     kt=G*A/l_b;
-    if(disk_1->index()==0) printf("kn = %lf et kt=%lf\n",kn,kt);
-    ktheta=0.05;
+    //kn=100;
+    //kt=10;
+
+    ktheta=100000.;
+    if(disk_1->index()==0) printf("kn = %lf, kt=%lf et ktheta= %lf\n",kn,kt,ktheta);
     dtheta=0.;
-    nu=5;//frottement visceux
+    nu=5.*disk_1->mass();//frottement visceux
     m_M=Eigen::Vector3d::Zero();
 }
 
@@ -70,10 +72,12 @@ void Bond::computeBond() {
    // if(disk_1->index()==1 && disk_2->index()==2) printf("force = %.12lf\n", F.norm());
 
     //moment de forces
-    disk_1->add_momentum(-F.cross(l1));//moments au point de contacte
-    disk_2->add_momentum(F.cross(l2));
+    disk_1->add_momentum(F.cross(l1));//moments au point de contacte
+    disk_2->add_momentum(-F.cross(l2));
     disk_1->add_momentum(-m_M);
     disk_2->add_momentum(m_M);
+    //disk_1->add_momentum(-nu*disk_1->w());
+    //disk_2->add_momentum(nu*disk_2->w());
 }
 
 void Bond::update_bond() {
