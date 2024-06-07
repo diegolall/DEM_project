@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
     double E=0.3e6; //module de young
     double diameter= 0.5;
-    int n_part=10;
+    int n_part=16;
     double longueur =diameter*(double)n_part;
     double largeur =diameter;
     double mass = eta*longueur*largeur*diameter;
@@ -36,9 +36,9 @@ int main(int argc, char *argv[])
     printf("mass = %lf and longueur = %lf\n", mass,longueur);
 
     //magnetic interaction
-    double phi =(argc>1)?std::stod(argv[1]):0.;
+    double phi =(argc>1)?std::stod(argv[1]):90.;
     double phi_rad=phi*M_PI/180.;
-    double B_norm=(argc>2)?std::stod(argv[2]):0.01; //in tesla (0.01 telsa= 100 gauss)
+    double B_norm=(argc>2)?std::stod(argv[2]):0.1; //in tesla (0.01 telsa= 100 gauss)
     Eigen::Vector3d B=Eigen::Vector3d(B_norm*std::sin(phi_rad),B_norm*std::cos(phi_rad),0.);
 
 
@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
     //double dt = 1.7417*longueur*std::sqrt(eta/E);
     double dt = 0.8165*diameter*std::sqrt(eta/E)/100.;
 
-
     //video
     int fps = 100;
     double tStartCapture = 0.;
@@ -57,7 +56,7 @@ int main(int argc, char *argv[])
     std::time_t currentTime_t = std::chrono::system_clock::to_time_t(currentTime);
     std::cout << "Current time: " << std::ctime(&currentTime_t) << std::endl;
 
-    double totalTime = 10.;
+    double totalTime = 100.;
     double recTime;
     int total_step=(int)(totalTime/dt);
     printf("total step: %d\n",total_step);
@@ -77,13 +76,14 @@ int main(int argc, char *argv[])
     }
     
     //variables
-    Eigen::Vector3d gravity(0.,-9.81,0.);
+    double ft_max=100.;
+    double ft_step=ft_max/totalTime/4.;
+    double ft=0.;
+    Eigen::Vector3d gravity(0.,0.,0.);
     Eigen::Vector3d r,n;
 
     //ETA variables
     int step_count=0;
-    //double delta;
-    
     for(double time = 0. ; time < totalTime ; time += dt)
     {
         //grains
@@ -94,22 +94,26 @@ int main(int argc, char *argv[])
             
             //reset force
             dsk.reset_force();
-            
+
+            gravity=Eigen::Vector3d(0.,-ft,0.);
             //set gravity force
+            //if(dsk.index()==n_part-1) dsk.add_gravity_force(gravity); //seulement la dernière particule
             dsk.add_gravity_force(gravity);
+
+            if(ft<ft_max) ft+=ft_step;
         }
 
         //compute ddi
-
+        /*
         for(Disk& dsk: disk_vec){
             for(Disk& other_disk: disk_vec){
                 if(dsk.index() != other_disk.index()){
                     n=dsk.r()-other_disk.r();
-                    //dsk.add_ddi_force(n,dsk,other_disk);
+                    dsk.add_ddi_force(n,dsk,other_disk);
                 }
             }
         }
-
+        */
 
         //compute bond
         for(Bond& bdn : bond_vec){

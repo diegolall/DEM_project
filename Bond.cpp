@@ -40,10 +40,10 @@ Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
     //kn=100;
     //kt=10;
 
-    ktheta=100000.;
+    ktheta=E*disk_1->inertia()/l_b;
     if(disk_1->index()==0) printf("kn = %lf, kt=%lf et ktheta= %lf\n",kn,kt,ktheta);
     dtheta=0.;
-    nu=5.*disk_1->mass();//frottement visceux
+    nu=100.*disk_1->mass();//frottement visceux
     m_M=Eigen::Vector3d::Zero();
 }
 
