@@ -12,8 +12,6 @@ double const mu0=4.*M_PI*pow(10,-7);
 Disk::Disk(int i_index, double i_radius, double i_mass, double i_x, double i_y, double i_vx, double i_vy, Eigen::Vector3d B,double i_E)
 {
     m_index = i_index;
-    m_linkedDisk = nullptr;
-    m_linkedCell = nullptr;
     m_radius = i_radius;
     m_mass = i_mass;
     m_inertia = 0.5*m_mass*m_radius*m_radius;
@@ -97,7 +95,7 @@ void Disk::set_linked_cell(Cell* i_linkedCell)
 void Disk::print(int i_num)
 {
     ostringstream fileName;
-    fileName<<"output/grain"<<i_num<<".txt";
+    fileName<<"output/all/grain"<<i_num<<".txt";
     ofstream myfile;
     myfile.open(fileName.str(),ios::app);
     myfile.precision(10);
@@ -155,6 +153,26 @@ Eigen::Vector3d Disk::v()
 Eigen::Vector3d Disk::w()
 {
     return m_w;
+}
+
+double Disk::x(){
+    return m_r.x();
+}
+
+double Disk::y(){
+    return m_r.y();
+}
+
+double Disk::vx(){
+    return m_v.x();
+}
+
+double Disk::vy(){
+    return m_v.y();
+}
+
+Eigen::Vector3d Disk::F(){
+    return m_F;
 }
 
 bool Disk::is_touching(double i_x,double i_y, double i_radius)

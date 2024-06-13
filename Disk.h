@@ -48,7 +48,8 @@ public:
     
     Cell* linked_cell();
     Disk* linked_disk();
-    
+
+    //getteur
     int index();
     double radius();
     double mass();
@@ -58,6 +59,11 @@ public:
     Eigen::Vector3d r();
     Eigen::Vector3d v();
     Eigen::Vector3d w();
+    double x();
+    double y();
+    double vx();
+    double vy();
+    Eigen::Vector3d F();
     
     bool is_touching(double,double,double);
 

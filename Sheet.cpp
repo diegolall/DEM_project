@@ -6,13 +6,14 @@
 #include <iostream>
 #include <stdlib.h>
 #include "Disk.h"
+#include "fstream"
 
 
-Sheet::Sheet(int i_particles,double i_size,double e,double i_mass,Eigen::Vector3d B,double E) {
+Sheet::Sheet(int i_particles,double i_long,double i_larg,double i_epai,double i_eta,Eigen::Vector3d B,double E) {
     m_number_of_particles=i_particles;
-    m_size=i_size;
-    m_mass = i_mass;
-    m_radius=e/2.;
+    m_size=i_long;
+    m_mass = i_eta*i_long*i_larg*i_epai;
+    m_radius=i_long/(double)m_number_of_particles;
 
     printf("radius of disk : %lf\n",m_radius);
 
@@ -23,10 +24,6 @@ Sheet::Sheet(int i_particles,double i_size,double e,double i_mass,Eigen::Vector3
     printf("Sheet created with %d particles \n",(int)m_particles.size());
 }
 
-Sheet::Sheet() {
-
-}
-
 Sheet::~Sheet() {
     //printf("sheet destroyed\n");
 }
@@ -34,3 +31,19 @@ Sheet::~Sheet() {
 std::vector<Disk>& Sheet::get_vector() {
     return m_particles;
 }
+
+void Sheet::print(std::string path){
+    std::ofstream file;
+    file.open(path);
+    file.precision(10);
+
+    for(Disk& dsk : m_particles){
+        file << dsk.index() << "\t" << dsk.x() << "\t" << dsk.y() << "\t" << dsk.x() << "\t" << dsk.y() << "\t" << dsk.theta() << "\t" << m_radius << "\t" << dsk.F().norm() << std::endl;
+    }
+    file.close();
+}
+
+int Sheet::n_part() {
+    return m_number_of_particles;
+}
+

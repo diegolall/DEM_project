@@ -14,13 +14,13 @@ Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
     //Bond variables
     disk_1=&i_d_1;
     disk_2=&i_d_2;
-    m_theta_1=(disk_1->theta());
-    m_theta_2=(disk_2->theta());
+    m_theta_1=disk_1->theta();
+    m_theta_2=disk_2->theta();
 
-    cp_1=disk_1->r()+Eigen::Vector3d(disk_1->radius()*std::cos(m_theta_1),disk_1->radius()*std::sin(m_theta_2),0);
+    cp_1=disk_1->r()+Eigen::Vector3d(disk_1->radius()*std::cos(m_theta_1),disk_1->radius()*std::sin(m_theta_1),0);
     cp_2=disk_2->r()+Eigen::Vector3d(-disk_2->radius()*std::cos(m_theta_2),-disk_2->radius()*std::sin(m_theta_2),0);
-
     rij=cp_2-cp_1;
+
     n=(disk_2->r()-disk_1->r()).normalized();
     t=(rij - (rij.dot(n))*n).normalized();
 
@@ -52,9 +52,10 @@ Bond::~Bond(){
 }
 
 void Bond::computeBond() {
-    update_bond();
+    this->update_bond();
     m_un=rij.dot(n);
     m_ut=rij.dot(t);
+    //std::cout << "un=" << m_un << " and ut = " << m_ut << std::endl;
     m_M=Eigen::Vector3d(0.,0.,-dtheta*ktheta);
     Fn=-kn*m_un*n;
     Ft=-kt*m_ut*t;
@@ -65,14 +66,16 @@ void Bond::computeBond() {
     disk_1->add_force(-frot_t-frot_n);
     disk_2->add_force(frot_t+frot_n);
 
+
     //forces
     Eigen::Vector3d F= Fn + Ft;
+    std::cout.precision(10);
     disk_1->add_force(-F);
     disk_2->add_force(F);
    // if(disk_1->index()==1 && disk_2->index()==2) printf("force = %.12lf\n", F.norm());
 
     //moment de forces
-    disk_1->add_momentum(F.cross(l1));//moments au point de contacte
+    disk_1->add_momentum(F.cross(l1));//moments au point de contact
     disk_2->add_momentum(-F.cross(l2));
     disk_1->add_momentum(-m_M);
     disk_2->add_momentum(m_M);
@@ -84,16 +87,21 @@ void Bond::update_bond() {
     m_theta_1=disk_1->theta();
     m_theta_2=disk_2->theta();
 
-    l1=Eigen::Vector3d(disk_1->radius()*std::cos(m_theta_1),disk_1->radius()*std::sin(m_theta_2),0);
+    l1=Eigen::Vector3d(disk_1->radius()*std::cos(m_theta_1),disk_1->radius()*std::sin(m_theta_1),0);
     l2=Eigen::Vector3d(-disk_2->radius()*std::cos(m_theta_2),-disk_2->radius()*std::sin(m_theta_2),0);
 
-    cp_1=disk_1->r()+ l1;
-    cp_2=disk_2->r()+ l2;
+    //std::cout << cp_1 << std::endl;
+    //std::cout << cp_2 << std::endl;
+    cp_1=disk_1->r() +l1;
+    cp_2=disk_2->r() +l2;
 
-    v_rel=disk_2->v()-disk_1->v();
 
-    rij=cp_2-cp_1;
+    v_rel=disk_2->v()-disk_1->v();//vitesse relative
+
+    rij=cp_2-cp_1;//probleme ici
+    //std::cout << rij << std::endl;
     n=(disk_2->r()-disk_1->r()).normalized();
+
 
     dtheta=m_theta_2-m_theta_1;
     t=(rij - (rij.dot(n))*n).normalized();

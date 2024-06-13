@@ -39,7 +39,6 @@ private:
     double ktheta;
     double nu;//frottement visceux
 
-
     double m_un;
     double m_ut;
     Eigen::Vector3d m_M;
