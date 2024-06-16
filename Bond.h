@@ -48,4 +48,5 @@ public:
     ~Bond();
     void computeBond();
     void update_bond();
+    void set_nu(double i_nu);
 };

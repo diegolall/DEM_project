@@ -14,7 +14,7 @@ Disk::Disk(int i_index, double i_radius, double i_mass, double i_x, double i_y, 
     m_index = i_index;
     m_radius = i_radius;
     m_mass = i_mass;
-    m_inertia = 0.5*m_mass*m_radius*m_radius;
+    m_inertia = M_PI*pow(m_radius,4)/4;
     E=i_E;
     
     m_r = Eigen::Vector3d(i_x,i_y,0.);
@@ -62,6 +62,11 @@ void Disk::add_ddi_force(Eigen::Vector3d n, Disk& i_disk,Disk& j_disk){
     //compute the dipole dipole force
     Eigen::Vector3d f=(3.*mu0/(4.*M_PI*pow(n.norm(),4)))*((n.cross(a->m_mu)).cross(b->m_mu)+(n.cross(b->m_mu)).cross(a->m_mu)
             -2.*n*(a->m_mu.dot(b->m_mu))+5.*n*((n.cross(a->m_mu)).dot(n.cross(b->m_mu))));
+    m_F+=f;
+}
+
+void Disk::add_field_force(Eigen::Vector3d B){
+    Eigen::Vector3d f=m_mu.dot(B)*B.normalized();
     m_F+=f;
 }
 

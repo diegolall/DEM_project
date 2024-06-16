@@ -12,16 +12,23 @@
 Sheet::Sheet(int i_particles,double i_long,double i_larg,double i_epai,double i_eta,Eigen::Vector3d B,double E) {
     m_number_of_particles=i_particles;
     m_size=i_long;
-    m_mass = i_eta*i_long*i_larg*i_epai;
+    m_mass = i_eta*i_long*i_larg*i_epai/(double)m_number_of_particles;
     m_radius=i_long/(double)m_number_of_particles;
 
     printf("radius of disk : %lf\n",m_radius);
+    printf("mass of disk : %lf\n",m_mass);
+
 
     m_particles.reserve(m_number_of_particles);
     for(int i=0;i<m_number_of_particles;i++){
-        m_particles.emplace_back(i,m_radius,m_mass/(double)m_number_of_particles,-m_size/2.+(double)i*2.*m_radius,0.,0.,0.,B,E);
+        if(i%3==0) {
+            m_particles.emplace_back(i, m_radius, m_mass, -m_size / 2. + (double) i * 2. * m_radius, 0., 0., 0., B, E);
+        }
+        else{
+            m_particles.emplace_back(i, m_radius, m_mass, -m_size / 2. + (double) i * 2. * m_radius, 0., 0., 0., Eigen::Vector3d(0.,0.,0.), E);
+        }
     }
-    printf("Sheet created with %d particles \n",(int)m_particles.size());
+    //printf("Sheet created with %d particles \n",(int)m_particles.size());
 }
 
 Sheet::~Sheet() {

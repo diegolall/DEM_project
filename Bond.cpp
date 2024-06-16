@@ -43,7 +43,7 @@ Bond::Bond(Disk& i_d_1, Disk& i_d_2) {
     ktheta=E*disk_1->inertia()/l_b;
     if(disk_1->index()==0) printf("kn = %lf, kt=%lf et ktheta= %lf\n",kn,kt,ktheta);
     dtheta=0.;
-    nu=100.*disk_1->mass();//frottement visceux
+    nu=50.*disk_1->mass();//frottement visceux
     m_M=Eigen::Vector3d::Zero();
 }
 
@@ -61,15 +61,13 @@ void Bond::computeBond() {
     Ft=-kt*m_ut*t;
 
     //frottement
-    frot_n =-nu*v_rel.dot(n)*n;
+    frot_n =-nu*v_rel;
     frot_t =-nu*v_rel.dot(t)*t;
     disk_1->add_force(-frot_t-frot_n);
     disk_2->add_force(frot_t+frot_n);
 
-
     //forces
-    Eigen::Vector3d F= Fn + Ft;
-    std::cout.precision(10);
+    Eigen::Vector3d F= Fn + Ft ;
     disk_1->add_force(-F);
     disk_2->add_force(F);
    // if(disk_1->index()==1 && disk_2->index()==2) printf("force = %.12lf\n", F.norm());
@@ -98,11 +96,14 @@ void Bond::update_bond() {
 
     v_rel=disk_2->v()-disk_1->v();//vitesse relative
 
-    rij=cp_2-cp_1;//probleme ici
-    //std::cout << rij << std::endl;
+    rij=cp_2-cp_1;
     n=(disk_2->r()-disk_1->r()).normalized();
 
 
     dtheta=m_theta_2-m_theta_1;
     t=(rij - (rij.dot(n))*n).normalized();
+}
+
+void Bond::set_nu(double i_nu){
+    nu=i_nu;
 }

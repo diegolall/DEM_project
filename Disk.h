@@ -42,6 +42,7 @@ public:
     void add_momentum(const Eigen::Vector3d&);
     void add_gravity_force(const Eigen::Vector3d&);
     void add_ddi_force(Eigen::Vector3d n, Disk& i_disk,Disk& j_disk);
+    void add_field_force(Eigen::Vector3d B);
     void set_linked_disk(Disk*);
     void set_linked_cell(Cell*);
     void print(int);
