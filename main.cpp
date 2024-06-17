@@ -42,9 +42,20 @@ int main(int argc, char *argv[])
     double E=1e7;
 
     int sheet_size=12;
-    std::ostringstream path;
-    path << "output/test.txt";
-    std::ofstream file(path.str());
+    std::ostringstream path1;
+    std::ostringstream path2;
+    std::ostringstream path3;
+    std::ostringstream path4;
+
+    path1 << "output/test1.txt";
+    path2 << "output/test2.txt";
+    path3 << "output/test3.txt";
+    path4 << "output/test4.txt";
+    std::ofstream file1(path1.str());
+    std::ofstream file2(path2.str());
+    std::ofstream file3(path3.str());
+    std::ofstream file4(path4.str());
+
 
     double theta_0=0.;
     double t_phi=0.;
@@ -70,7 +81,7 @@ int main(int argc, char *argv[])
     std::time_t currentTime_t = std::chrono::system_clock::to_time_t(currentTime);
     std::cout << "Current time: " << std::ctime(&currentTime_t) << std::endl;
 
-    double totalTime = 4.;
+    double totalTime = 7.;
     double recTime;
 
     //record initial state
@@ -105,10 +116,9 @@ int main(int argc, char *argv[])
 
     bool nu_done=true;
     double max_t=0.;
-
     for (double time = 0.; time < totalTime; time += dt) {
         //grains
-        if(time>totalTime/10){
+        if(time>totalTime/8){
             if(nu_done)
             {
                 for (Bond &bdn: bonds) {
@@ -156,7 +166,7 @@ int main(int argc, char *argv[])
             }
         }
         //record
-        /*
+
         recTime = time - tStartCapture;
         if (recTime >= 0.) {
             if ((int) ((recTime + dt) * fps) > (int) (recTime * fps)) {
@@ -165,13 +175,23 @@ int main(int argc, char *argv[])
                 }
             }
         }
-         */
-        file << time/totalTime << "\t" << ft/( E * I)*pow(longueur-radius,2) << std::endl;
+
+        if(!nu_done) {
+            double T=0.745668;
+            file1 << (time - max_t)/T << "\t" << vec.at(2).y() << std::endl;
+            file2 << (time - max_t)/T << "\t" << vec.at(4).y()  << std::endl;
+            file3 << (time - max_t)/T << "\t" << vec.at(7).y()  << std::endl;
+            file4 << (time - max_t)/T << "\t" << vec.at(11).y()  << std::endl;
+        }
         //printf("step %8d/%d\n", step_count, total_step);
         step_count++;
         //printf("step: %d\n",step_count);
     }
-    file.close();
+    file1.close();
+    file2.close();
+    file3.close();
+    file4.close();
+
     return 0;
 }
 
